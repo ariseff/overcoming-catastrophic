@@ -58,11 +58,12 @@ class Model:
             F_prev = deepcopy(self.F_accum)
             mean_diffs = np.zeros(0)
 
+        fish_gra = tf.gradients(tf.log(probs[0,class_ind]), self.var_list)
         for i in range(num_samples):
             # select random input image
             im_ind = np.random.randint(imgset.shape[0])
             # compute first-order derivatives
-            ders = sess.run(tf.gradients(tf.log(probs[0,class_ind]), self.var_list), feed_dict={self.x: imgset[im_ind:im_ind+1]})
+            ders = sess.run(fish_gra, feed_dict={self.x: imgset[im_ind:im_ind+1]})
             # square the derivatives and add to total
             for v in range(len(self.F_accum)):
                 self.F_accum[v] += np.square(ders[v])
